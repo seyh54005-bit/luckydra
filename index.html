@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>កម្មវិធីបង្វិលកង - Zeal Lubricants Lucky Spin</title>
+
+  <!-- Google Fonts: Noto Sans Khmer, Kantumruy Pro & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            khmer: ['"Noto Sans Khmer"', '"Kantumruy Pro"', 'Inter', 'sans-serif'],
+            sans: ['Inter', '"Noto Sans Khmer"', 'sans-serif'],
+          },
+          colors: {
+            zealGreen: '#0D753A',
+            zealGreenDark: '#085027',
+            zealGold: '#F3AA1C',
+            zealGoldDark: '#D68F0D',
+            zealRed: '#E53935',
+            appOrange: '#F59E0B',
+          },
+          boxShadow: {
+            'card': '0 10px 30px -5px rgba(220, 100, 20, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03)',
+            'wheel': '0 15px 35px -5px rgba(0, 0, 0, 0.2), 0 0 0 10px #F3AA1C, 0 0 0 14px #FFFFFF',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    body {
+      font-family: 'Noto Sans Khmer', 'Kantumruy Pro', sans-serif;
+      background: linear-gradient(135deg, #FFF9EE 0%, #FFF3EE 40%, #F5EEFF 100%);
+      min-height: 100vh;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F8FAFC;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    /* Tick Shake Animation */
+    .tick-shake {
+      animation: tickBump 0.08s ease-out;
+    }
+    @keyframes tickBump {
+      0% { transform: translateX(-50%) rotate(0deg); }
+      50% { transform: translateX(-50%) rotate(-10deg) scale(1.1); }
+      100% { transform: translateX(-50%) rotate(0deg); }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between p-3 sm:p-6">
+
+  <!-- TOP HEADER BAR -->
+  <header class="w-full max-w-7xl mx-auto bg-white/90 backdrop-blur-md rounded-2xl p-3 sm:px-6 sm:py-3.5 shadow-sm border border-orange-100/60 mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-3">
+    <!-- Left Logo & Title -->
+    <div class="flex items-center gap-3">
+      <!-- Zeal App Logo -->
+      <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white border border-amber-100 flex items-center justify-center shadow-md shadow-orange-500/20 overflow-hidden p-1">
+        <img src="Zeal-Logo.png" alt="Zeal Lubricants Logo" class="w-full h-full object-contain">
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-lg sm:text-xl font-extrabold bg-gradient-to-r from-orange-600 via-amber-600 to-red-600 bg-clip-text text-transparent">
+            កម្មវិធីបង្វិលកង
+          </h1>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">Zeal Edition</span>
+        </div>
+        <p class="text-[11px] sm:text-xs text-slate-400 font-medium">ចាប់រង្វាន់ផ្សងសំណាង ដោយយុត្តិធម៌ និងរហ័ស</p>
+      </div>
+    </div>
+
+    <!-- Right Top Header Actions -->
+    <div class="flex items-center gap-2 ml-auto sm:ml-0">
+      <!-- Sound Toggle Pill Button -->
+      <button id="soundToggleBtn" onclick="toggleSound()" class="px-3.5 py-1.5 rounded-full bg-amber-50/80 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+        <span id="soundIcon">🔊</span>
+        <span id="soundLabel">សំឡេង៖ បើក</span>
+      </button>
+
+      <!-- Change Logo Button -->
+      <button onclick="triggerLogoUpload()" class="px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+        <span>🖼️</span>
+        <span>ប្តូរ Logo</span>
+      </button>
+      <input type="file" id="logoFileInput" accept="image/*" onchange="handleLogoUpload(event)" class="hidden">
+    </div>
+  </header>
+
+
+  <!-- MAIN TWO-COLUMN DASHBOARD -->
+  <main class="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 flex-1 items-start">
+
+    <!-- ========================================================================= -->
+    <!-- LEFT COLUMN: LUCKY WHEEL CARD (lg:col-span-7 or 6)                        -->
+    <!-- ========================================================================= -->
+    <section class="lg:col-span-7 bg-white rounded-3xl p-4 sm:p-8 shadow-card border border-amber-100/70 flex flex-col items-center justify-between min-h-[520px] sm:min-h-[600px] relative">
+      
+      <!-- WHEEL WRAPPER CONTAINER -->
+      <div class="relative w-[300px] h-[300px] xs:w-[340px] xs:h-[340px] sm:w-[410px] sm:h-[410px] flex items-center justify-center my-auto">
+
+        <!-- TOP RED POINTER NEEDLE PIN -->
+        <div id="pointerNeedle" class="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 transition-transform origin-top">
+          <svg width="44" height="54" viewBox="0 0 44 54" fill="none" class="drop-shadow-md">
+            <path d="M22 54L5 14C1 6 7 0 15 0H29C37 0 43 6 39 14L22 54Z" fill="url(#needleGrad)"/>
+            <path d="M22 45L9 14C7 8 10 4 15 4H29C34 4 37 8 35 14L22 45Z" fill="#FF5252" fill-opacity="0.9"/>
+            <circle cx="22" cy="13" r="5.5" fill="#FFFFFF"/>
+            <defs>
+              <linearGradient id="needleGrad" x1="22" y1="0" x2="22" y2="54" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#EF4444"/>
+                <stop offset="1" stop-color="#B91C1C"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <!-- WHEEL CANVAS -->
+        <canvas id="wheelCanvas" class="w-full h-full rounded-full shadow-wheel border-4 border-amber-400 cursor-pointer touch-none"></canvas>
+
+        <!-- CENTER CIRCULAR HUB (Zeal Logo Display + Spin Trigger) -->
+        <div onclick="spinWheel()" class="absolute z-20 w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white shadow-xl border-4 border-amber-300 flex flex-col items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 group p-1 overflow-hidden">
+          <div id="centerLogoContainer" class="w-full h-full flex items-center justify-center">
+            <!-- Rendered via JS -->
+          </div>
+          <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-full flex items-center justify-center">
+            <span class="text-[10px] font-extrabold bg-amber-500 text-white px-2 py-0.5 rounded-full shadow">បង្វិល</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM WHEEL CONTROLS & CTA BUTTON -->
+      <div class="w-full max-w-md mt-6 flex flex-col items-center gap-2">
+        <!-- Main Spin Button -->
+        <button id="spinBtn" onclick="spinWheel()" class="w-full py-3.5 sm:py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:to-red-600 text-white font-extrabold text-lg sm:text-xl shadow-lg shadow-orange-500/30 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 border-b-4 border-red-700">
+          <svg class="w-6 h-6 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>ចាប់ផ្តើមបង្វិលកង!</span>
+        </button>
+
+        <!-- Subtitle counter caption -->
+        <p class="text-xs text-slate-400 font-medium">
+          ចំនួនជម្រើសសរុប៖ <span id="totalOptionCount" class="font-bold text-amber-600">0</span> ជម្រើស
+        </p>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- RIGHT COLUMN: TWO STACKED CARDS (lg:col-span-5)                           -->
+    <!-- ========================================================================= -->
+    <section class="lg:col-span-5 flex flex-col gap-5 sm:gap-6">
+
+      <!-- TOP RIGHT CARD: PRIZE / ITEM CONTROLLER -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-card border border-amber-100/70 flex flex-col">
+        
+        <!-- Card Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <!-- Orange Vertical Pill Accent -->
+            <div class="w-1.5 h-5 bg-gradient-to-b from-orange-500 to-red-500 rounded-full"></div>
+            <h2 class="text-sm sm:text-base font-extrabold text-slate-800">កំណត់បញ្ជីរង្វាន់ / ជម្រើស</h2>
+          </div>
+
+          <!-- Top Right Presets -->
+          <div class="flex items-center gap-1.5">
+            <button onclick="shuffleSlices()" class="text-[11px] font-semibold text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg transition" title="ច្របល់លំដាប់">
+              ត្រលប់
+            </button>
+            <button onclick="resetToZealDefaults()" class="text-[11px] font-semibold text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200/60 px-2.5 py-1 rounded-lg transition">
+              លំនាំដើម
+            </button>
+          </div>
+        </div>
+
+        <!-- Two-Tab Switcher Bar -->
+        <div class="bg-slate-100/80 p-1 rounded-2xl flex items-center my-3 text-xs font-bold">
+          <button id="tabSingleBtn" onclick="switchTab('single')" class="flex-1 py-1.5 rounded-xl bg-white text-slate-800 shadow-sm transition">
+            បញ្ចូលម្តងមួយៗ
+          </button>
+          <button id="tabBulkBtn" onclick="switchTab('bulk')" class="flex-1 py-1.5 rounded-xl text-slate-500 hover:text-slate-800 transition">
+            បញ្ចូលច្រើនព្រមគ្នា
+          </button>
+        </div>
+
+        <!-- TAB 1: SINGLE ENTRY MODE -->
+        <div id="tabSingleView" class="space-y-3">
+          <!-- Input + Add Button -->
+          <div class="flex items-center gap-2">
+            <input type="text" id="newPrizeInput" placeholder="វាយបញ្ចូលឈ្មោះរង្វាន់ ឬឈ្មោះ..." onkeydown="if(event.key==='Enter') addSinglePrize()" class="flex-1 bg-slate-50 border border-slate-200 focus:border-amber-400 focus:bg-white rounded-xl px-3.5 py-2 text-xs font-khmer outline-none transition">
+            <button onclick="addSinglePrize()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold px-3.5 py-2 rounded-xl text-xs shadow-sm active:scale-95 transition flex items-center gap-1">
+              <span>+</span> បន្ថែម
+            </button>
+          </div>
+
+          <!-- Scrollable Prize List Items -->
+          <div id="prizeListContainer" class="max-h-56 sm:max-h-64 overflow-y-auto space-y-1.5 pr-1">
+            <!-- Dynamic Prize Rows generated via JS -->
+          </div>
+        </div>
+
+        <!-- TAB 2: BULK TEXTAREA ENTRY MODE (Hidden by default) -->
+        <div id="tabBulkView" class="hidden space-y-3">
+          <textarea id="bulkPrizeTextarea" rows="6" placeholder="បញ្ចូលឈ្មោះរង្វាន់ មួយក្នុងមួយជួរ (ឧទាហរណ៍)៖&#10;កែវទឹក&#10;អាវយឺត&#10;មួក&#10;បន្តោងសោ" class="w-full bg-slate-50 border border-slate-200 focus:border-amber-400 focus:bg-white rounded-xl p-3 text-xs font-khmer outline-none transition"></textarea>
+          <div class="flex items-center justify-end gap-2">
+            <button onclick="applyBulkPrizes(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded-xl text-xs transition">
+              + បន្ថែមបន្ត
+            </button>
+            <button onclick="applyBulkPrizes(true)" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-1.5 rounded-xl text-xs shadow transition">
+              ជំនួសបញ្ជីចាស់
+            </button>
+          </div>
+        </div>
+
+        <!-- Card Footer Options -->
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <label class="flex items-center gap-2 cursor-pointer select-none hover:text-slate-800">
+            <input type="checkbox" id="removeWinnerCheckbox" onchange="toggleAutoRemoveWinner(this.checked)" class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 border-slate-300">
+            <span>លុបឈ្មោះអ្នកឈ្នះចេញបន្ទាប់ពីបង្វិល</span>
+          </label>
+          <button onclick="clearAllPrizes()" class="text-red-500 hover:text-red-700 font-semibold text-xs hover:underline">
+            លុបទាំងអស់
+          </button>
+        </div>
+
+      </div>
+
+
+      <!-- BOTTOM RIGHT CARD: SPIN HISTORY LOG -->
+      <div class="bg-white rounded-3xl p-4 sm:p-5 shadow-card border border-amber-100/70 flex flex-col">
+        
+        <!-- Card Header -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-500 text-base">🕒</span>
+            <h2 class="text-sm sm:text-base font-extrabold text-slate-800">
+              ប្រវត្តិលទ្ធផល ( <span id="historyCount">0</span> )
+            </h2>
+          </div>
+          <button onclick="clearHistory()" class="text-[11px] font-semibold text-slate-400 hover:text-red-500 transition">
+            សម្អាតប្រវត្តិ
+          </button>
+        </div>
+
+        <!-- History Content Area -->
+        <div class="mt-3 min-h-[100px] max-h-48 overflow-y-auto">
+          <p id="emptyHistoryMsg" class="text-xs text-slate-400 text-center py-8">
+            មិនទាន់មានប្រវត្តិនៃការបង្វិលនៅឡើយទេ
+          </p>
+          <ul id="historyList" class="space-y-2"></ul>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- WINNER CELEBRATION MODAL POPUP -->
+  <div id="winnerModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="winnerModalCard" class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl border-4 border-amber-400 transform transition-all scale-95 opacity-0 duration-300">
+      
+      <!-- Crown / Gift Icon -->
+      <div class="w-20 h-20 bg-gradient-to-tr from-amber-400 via-orange-500 to-red-500 rounded-full mx-auto flex items-center justify-center shadow-lg -mt-12 border-4 border-white text-3xl animate-bounce">
+        🎉
+      </div>
+
+      <h3 class="text-xs font-extrabold text-amber-600 tracking-wider uppercase mt-3">សូមអបអរសាទរ! / CONGRATULATIONS</h3>
+      <h2 id="winnerTitle" class="text-2xl sm:text-3xl font-extrabold text-zealGreen my-2 font-khmer"></h2>
+      
+      <div class="bg-amber-50 rounded-2xl p-4 my-3 border border-amber-200/80 flex flex-col items-center justify-center">
+        <div id="winnerIconContainer" class="text-5xl my-1">🎁</div>
+        <p id="winnerDesc" class="text-xs text-amber-900 font-medium mt-1">អ្នកបានឈ្នះរង្វាន់ពី Zeal Lubricants!</p>
+      </div>
+
+      <button onclick="closeWinnerModal()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-zealGreen to-emerald-600 text-white font-extrabold text-sm shadow-md hover:brightness-110 active:scale-95 transition">
+        បន្តបង្វិល (Continue)
+      </button>
+    </div>
+  </div>
+
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    /* ==========================================================================
+       1. ZEAL LUBRICANTS BRAND LOGO SVG TEMPLATE & DEFAULTS
+       ========================================================================== */
+    const ZEAL_LOGO_SVG = `
+      <svg viewBox="0 0 300 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="dropGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFD700" />
+            <stop offset="40%" stop-color="#E67E22" />
+            <stop offset="100%" stop-color="#A04000" />
+          </linearGradient>
+          <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#EE8828" />
+            <stop offset="50%" stop-color="#DF6C1B" />
+            <stop offset="100%" stop-color="#BD490D" />
+          </linearGradient>
+          <linearGradient id="zGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1B6032" />
+            <stop offset="50%" stop-color="#0D753A" />
+            <stop offset="100%" stop-color="#083E1E" />
+          </linearGradient>
+        </defs>
+
+        <!-- Golden Oil Drop -->
+        <path d="M 75 25 C 75 25 35 85 35 125 C 35 152 53 170 75 170 C 97 170 115 152 115 125 C 115 85 75 25 75 25 Z" fill="url(#dropGrad)" />
+
+        <!-- Drop Inner Highlight -->
+        <path d="M 70 42 C 70 42 48 90 48 120 C 48 135 55 148 68 152 C 58 145 54 132 55 118 C 57 95 72 60 70 42 Z" fill="#FFEAA7" opacity="0.6"/>
+
+        <!-- Green 3D Z Ribbon -->
+        <path d="M 25 105 C 50 82 105 70 110 90 C 115 108 85 120 70 135 C 55 150 45 160 48 172 C 50 178 60 180 75 175 C 95 168 125 135 135 118 C 122 135 95 160 72 166 C 58 170 48 165 44 155 C 38 140 55 125 72 110 C 90 95 102 85 96 78 C 88 70 45 80 25 105 Z" fill="url(#zGrad)" />
+
+        <!-- Orange/Brown Rounded Box for Zeal -->
+        <rect x="135" y="65" width="145" height="52" rx="14" fill="url(#badgeGrad)" />
+        <text x="202" y="103" font-family="Inter, sans-serif" font-weight="900" font-size="38" fill="#FFFFFF" text-anchor="middle">Zeal</text>
+        <text x="274" y="75" font-family="sans-serif" font-weight="bold" font-size="10" fill="#000000">®</text>
+
+        <!-- Green Lubricants Text -->
+        <text x="207" y="142" font-family="Inter, sans-serif" font-weight="800" font-size="19" fill="#0D753A" letter-spacing="3" text-anchor="middle">Lubricants</text>
+      </svg>
+    `;
+
+    // 10 Slices with Zeal Lubricants colors and Khmer items (using 'បន្តោងសោ')
+    const ZEAL_DEFAULT_SLICES = [
+      { text: 'កែវទឹក', icon: '☕', color: '#0D753A', textColor: '#FFFFFF' },
+      { text: 'អាវយឺត', icon: '👕', color: '#F3AA1C', textColor: '#1E293B' },
+      { text: 'សូមអរគុណ', icon: '❤️', color: '#0D753A', textColor: '#FFFFFF' },
+      { text: 'មួក', icon: '🧢', color: '#F3AA1C', textColor: '#1E293B' },
+      { text: 'សូមអរគុណ', icon: '❤️', color: '#0D753A', textColor: '#FFFFFF' },
+      { text: 'បន្តោងសោ', icon: '🔑', color: '#F3AA1C', textColor: '#1E293B' },
+      { text: 'កែវទឹក', icon: '☕', color: '#0D753A', textColor: '#FFFFFF' },
+      { text: 'អាវយឺត', icon: '👕', color: '#F3AA1C', textColor: '#1E293B' },
+      { text: 'សូមអរគុណ', icon: '❤️', color: '#0D753A', textColor: '#FFFFFF' },
+      { text: 'មួក', icon: '🧢', color: '#F3AA1C', textColor: '#1E293B' }
+    ];
+
+    // State Variables
+    let slices = JSON.parse(localStorage.getItem('zeal_wheel_slices_v2')) || ZEAL_DEFAULT_SLICES;
+    
+    // Automatic migration to replace any legacy text 'ពួងសោរ' with 'បន្តោងសោ'
+    slices = slices.map(s => {
+      if (s.text === 'ពួងសោរ') s.text = 'បន្តោងសោ';
+      return s;
+    });
+
+    let spinHistory = JSON.parse(localStorage.getItem('zeal_spin_history')) || [];
+    let customLogoUrl = localStorage.getItem('zeal_custom_logo') || 'Zeal-Logo.png';
+    let autoRemoveWinner = JSON.parse(localStorage.getItem('zeal_auto_remove_winner')) || false;
+    let soundEnabled = JSON.parse(localStorage.getItem('zeal_sound_enabled')) ?? true;
+
+    let pendingWinnerIndex = null;
+
+    /* ==========================================================================
+       2. LOGO MANAGEMENT & DISPLAY
+       ========================================================================== */
+    function renderCenterLogo() {
+      const centerContainer = document.getElementById('centerLogoContainer');
+      if (customLogoUrl) {
+        centerContainer.innerHTML = `<img src="${customLogoUrl}" alt="Zeal Logo" class="w-full h-full object-contain p-1">`;
+      } else {
+        centerContainer.innerHTML = `<div class="w-full h-full p-1">${ZEAL_LOGO_SVG}</div>`;
+      }
+    }
+
+    function triggerLogoUpload() {
+      document.getElementById('logoFileInput').click();
+    }
+
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        customLogoUrl = e.target.result;
+        localStorage.setItem('zeal_custom_logo', customLogoUrl);
+        renderCenterLogo();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* ==========================================================================
+       3. CANVAS & WHEEL GRAPHICS
+       ========================================================================== */
+    const canvas = document.getElementById('wheelCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let currentAngle = 0; // Radians
+    let isSpinning = false;
+    let lastTickSegment = -1;
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      drawWheel();
+    }
+
+    function drawWheel() {
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const radius = Math.min(centerX, centerY) - 6;
+      const numSlices = slices.length;
+
+      ctx.clearRect(0, 0, width, height);
+
+      if (numSlices === 0) {
+        // Draw empty state wheel
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = '#F8FAFC';
+        ctx.fill();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#CBD5E1';
+        ctx.stroke();
+
+        ctx.fillStyle = '#94A3B8';
+        ctx.font = 'bold 14px "Noto Sans Khmer", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('សូមបន្ថែមរង្វាន់...', centerX, centerY);
+        return;
+      }
+
+      const sliceAngle = (2 * Math.PI) / numSlices;
+
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(currentAngle);
+
+      for (let i = 0; i < numSlices; i++) {
+        const startAngle = i * sliceAngle;
+        const endAngle = startAngle + sliceAngle;
+        const slice = slices[i];
+
+        // Draw Slice Wedge
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = slice.color;
+        ctx.fill();
+
+        // Slice Divider Line
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.stroke();
+
+        // Inner Radial Shading Gradient
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, startAngle, endAngle);
+        ctx.lineTo(0, 0);
+        ctx.clip();
+        const grad = ctx.createRadialGradient(0, 0, radius * 0.3, 0, 0, radius);
+        grad.addColorStop(0, 'rgba(255,255,255,0.18)');
+        grad.addColorStop(1, 'rgba(0,0,0,0.12)');
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+
+        // Draw Text & Icon
+        ctx.save();
+        const middleAngle = startAngle + sliceAngle / 2;
+        ctx.rotate(middleAngle);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        // Prize Name Text
+        ctx.fillStyle = slice.textColor || '#FFFFFF';
+        const fontSize = numSlices > 12 ? 12 : 14;
+        ctx.font = `bold ${fontSize}px "Noto Sans Khmer", sans-serif`;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        ctx.shadowBlur = 3;
+        ctx.fillText(slice.text, radius - 18, 0);
+
+        // Icon Emoji
+        if (slice.icon) {
+          ctx.font = `${fontSize + 3}px sans-serif`;
+          ctx.fillText(slice.icon, radius - 100, 1);
+        }
+
+        ctx.restore();
+      }
+
+      // Outer Golden Rim Accent
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, 2 * Math.PI);
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = '#F3AA1C';
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    /* ==========================================================================
+       4. WEB AUDIO API SYNTHESIZER
+       ========================================================================== */
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem('zeal_sound_enabled', JSON.stringify(soundEnabled));
+      updateSoundUI();
+    }
+
+    function updateSoundUI() {
+      document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+      document.getElementById('soundLabel').textContent = soundEnabled ? 'សំឡេង៖ បើក' : 'សំឡេង៖ បិទ';
+      document.getElementById('soundToggleBtn').classList.toggle('opacity-60', !soundEnabled);
+    }
+
+    function playTickSound() {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.035);
+        
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.035);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.035);
+      } catch (e) {}
+    }
+
+    function playWinSound() {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          
+          const startTime = audioCtx.currentTime + idx * 0.08;
+          gain.gain.setValueAtTime(0.2, startTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.35);
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(startTime);
+          osc.stop(startTime + 0.35);
+        });
+      } catch (e) {}
+    }
+
+    /* ==========================================================================
+       5. SPIN PHYSICS & ANIMATION
+       ========================================================================== */
+    function spinWheel() {
+      if (isSpinning || slices.length === 0) return;
+      initAudio();
+
+      isSpinning = true;
+      document.getElementById('spinBtn').disabled = true;
+      document.getElementById('spinBtn').classList.add('opacity-75', 'cursor-not-allowed');
+
+      const numSlices = slices.length;
+      const sliceAngle = (2 * Math.PI) / numSlices;
+
+      const winningIndex = Math.floor(Math.random() * numSlices);
+      pendingWinnerIndex = winningIndex;
+
+      const fullRotations = 5 + Math.floor(Math.random() * 4);
+      const winningSegmentCenter = winningIndex * sliceAngle + sliceAngle / 2;
+      
+      // Target offset to line up winning segment with top needle ( - Math.PI / 2 )
+      const targetAngleOffset = (Math.PI * 1.5) - winningSegmentCenter;
+      const currentMod = currentAngle % (2 * Math.PI);
+      const finalTargetAngle = currentAngle + (fullRotations * 2 * Math.PI) + (targetAngleOffset - currentMod);
+
+      const startTime = performance.now();
+      const spinDuration = 4200; // 4.2 Seconds
+
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function animateSpin(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / spinDuration, 1);
+        const easedProgress = easeOutCubic(progress);
+
+        currentAngle = currentAngle + (finalTargetAngle - currentAngle) * (easedProgress * 0.08 + 0.02);
+        
+        // Tick detection
+        const effectivePointerAngle = (Math.PI * 1.5 - currentAngle) % (2 * Math.PI);
+        const normalizedPointerAngle = (effectivePointerAngle + 2 * Math.PI) % (2 * Math.PI);
+        const currentSegment = Math.floor(normalizedPointerAngle / sliceAngle);
+
+        if (currentSegment !== lastTickSegment) {
+          playTickSound();
+          triggerNeedleShake();
+          lastTickSegment = currentSegment;
+        }
+
+        drawWheel();
+
+        if (progress < 1 && Math.abs(finalTargetAngle - currentAngle) > 0.002) {
+          requestAnimationFrame(animateSpin);
+        } else {
+          currentAngle = finalTargetAngle;
+          drawWheel();
+          isSpinning = false;
+          document.getElementById('spinBtn').disabled = false;
+          document.getElementById('spinBtn').classList.remove('opacity-75', 'cursor-not-allowed');
+          
+          handleSpinWin(winningIndex);
+        }
+      }
+
+      requestAnimationFrame(animateSpin);
+    }
+
+    function triggerNeedleShake() {
+      const needle = document.getElementById('pointerNeedle');
+      needle.classList.remove('tick-shake');
+      void needle.offsetWidth;
+      needle.classList.add('tick-shake');
+    }
+
+    /* ==========================================================================
+       6. WINNER MODAL & HISTORY MANAGEMENT
+       ========================================================================== */
+    function handleSpinWin(index) {
+      const winner = slices[index];
+      if (!winner) return;
+
+      playWinSound();
+
+      confetti({
+        particleCount: 85,
+        spread: 75,
+        origin: { y: 0.6 }
+      });
+
+      document.getElementById('winnerTitle').textContent = winner.text;
+      document.getElementById('winnerIconContainer').textContent = winner.icon || '🎁';
+      
+      if (winner.text.includes('អរគុណ')) {
+        document.getElementById('winnerDesc').textContent = 'សូមអរគុណសម្រាប់ការចូលរួម! សូមព្យាយាមម្តងទៀត!';
+      } else {
+        document.getElementById('winnerDesc').textContent = `អ្នកបានឈ្នះរង្វាន់ "${winner.text}" យ៉ាងពិតប្រាកដ!`;
+      }
+
+      // Add to Spin History Log
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      spinHistory.unshift({ text: winner.text, icon: winner.icon || '🎁', time: timeStr });
+      if (spinHistory.length > 25) spinHistory.pop();
+      
+      localStorage.setItem('zeal_spin_history', JSON.stringify(spinHistory));
+      renderHistory();
+
+      openWinnerModal();
+    }
+
+    function openWinnerModal() {
+      const modal = document.getElementById('winnerModal');
+      const card = document.getElementById('winnerModalCard');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        card.classList.remove('scale-95', 'opacity-0');
+        card.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeWinnerModal() {
+      const modal = document.getElementById('winnerModal');
+      const card = document.getElementById('winnerModalCard');
+      card.classList.remove('scale-100', 'opacity-100');
+      card.classList.add('scale-95', 'opacity-0');
+      
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        // Check auto-remove winner setting
+        if (autoRemoveWinner && pendingWinnerIndex !== null) {
+          removePrize(pendingWinnerIndex);
+          pendingWinnerIndex = null;
+        }
+      }, 200);
+    }
+
+    function renderHistory() {
+      const listEl = document.getElementById('historyList');
+      const emptyMsg = document.getElementById('emptyHistoryMsg');
+      const countBadge = document.getElementById('historyCount');
+
+      countBadge.textContent = spinHistory.length;
+
+      if (spinHistory.length === 0) {
+        emptyMsg.classList.remove('hidden');
+        listEl.innerHTML = '';
+        return;
+      }
+
+      emptyMsg.classList.add('hidden');
+      listEl.innerHTML = spinHistory.map((item, idx) => `
+        <li class="flex items-center justify-between text-xs bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold flex items-center justify-center">${idx + 1}</span>
+            <span class="font-bold text-slate-700 flex items-center gap-1.5">
+              <span>${item.icon}</span>
+              <span>${item.text}</span>
+            </span>
+          </div>
+          <span class="text-[10px] text-slate-400 font-mono">${item.time}</span>
+        </li>
+      `).join('');
+    }
+
+    function clearHistory() {
+      spinHistory = [];
+      localStorage.removeItem('zeal_spin_history');
+      renderHistory();
+    }
+
+    /* ==========================================================================
+       7. PRIZE LIST CONTROLLER & TAB SWITCHER
+       ========================================================================== */
+    function switchTab(tab) {
+      const singleBtn = document.getElementById('tabSingleBtn');
+      const bulkBtn = document.getElementById('tabBulkBtn');
+      const singleView = document.getElementById('tabSingleView');
+      const bulkView = document.getElementById('tabBulkView');
+
+      if (tab === 'single') {
+        singleBtn.className = 'flex-1 py-1.5 rounded-xl bg-white text-slate-800 shadow-sm transition';
+        bulkBtn.className = 'flex-1 py-1.5 rounded-xl text-slate-500 hover:text-slate-800 transition';
+        singleView.classList.remove('hidden');
+        bulkView.classList.add('hidden');
+      } else {
+        bulkBtn.className = 'flex-1 py-1.5 rounded-xl bg-white text-slate-800 shadow-sm transition';
+        singleBtn.className = 'flex-1 py-1.5 rounded-xl text-slate-500 hover:text-slate-800 transition';
+        bulkView.classList.remove('hidden');
+        singleView.classList.add('hidden');
+        
+        // Populate bulk textarea with current prizes
+        document.getElementById('bulkPrizeTextarea').value = slices.map(s => s.text).join('\n');
+      }
+    }
+
+    function renderPrizeList() {
+      const container = document.getElementById('prizeListContainer');
+      document.getElementById('totalOptionCount').textContent = slices.length;
+
+      container.innerHTML = slices.map((s, idx) => `
+        <div class="flex items-center justify-between bg-slate-50 hover:bg-slate-100 px-3 py-2 rounded-xl border border-slate-100 transition">
+          <div class="flex items-center gap-2 flex-1 mr-2">
+            <!-- Colored Dot Indicator -->
+            <span class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${s.color};"></span>
+            <input type="text" value="${s.text}" onchange="updatePrizeText(${idx}, this.value)" class="bg-transparent text-xs font-semibold text-slate-700 outline-none w-full font-khmer focus:bg-white focus:px-1 rounded">
+          </div>
+          <button onclick="removePrize(${idx})" class="text-slate-400 hover:text-red-500 font-bold px-1 text-sm transition">×</button>
+        </div>
+      `).join('');
+
+      saveSlices();
+      drawWheel();
+    }
+
+    function updatePrizeText(idx, val) {
+      if (val.trim()) {
+        slices[idx].text = val.trim();
+        saveSlices();
+        drawWheel();
+      }
+    }
+
+    function addSinglePrize() {
+      const input = document.getElementById('newPrizeInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const isGreen = slices.length % 2 === 0;
+      let icon = '🎁';
+      if (text.includes('កែវ')) icon = '☕';
+      else if (text.includes('អាវ')) icon = '👕';
+      else if (text.includes('មួក')) icon = '🧢';
+      else if (text.includes('សោ')) icon = '🔑';
+      else if (text.includes('អរគុណ')) icon = '❤️';
+
+      slices.push({
+        text: text,
+        icon: icon,
+        color: isGreen ? '#0D753A' : '#F3AA1C',
+        textColor: isGreen ? '#FFFFFF' : '#1E293B'
+      });
+
+      input.value = '';
+      renderPrizeList();
+    }
+
+    function removePrize(idx) {
+      slices.splice(idx, 1);
+      renderPrizeList();
+    }
+
+    function clearAllPrizes() {
+      slices = [];
+      renderPrizeList();
+    }
+
+    function applyBulkPrizes(replace) {
+      const textarea = document.getElementById('bulkPrizeTextarea');
+      const lines = textarea.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length === 0) return;
+
+      if (replace) slices = [];
+
+      lines.forEach((line) => {
+        const isGreen = slices.length % 2 === 0;
+        let icon = '🎁';
+        if (line.includes('កែវ')) icon = '☕';
+        else if (line.includes('អាវ')) icon = '👕';
+        else if (line.includes('មួក')) icon = '🧢';
+        else if (line.includes('សោ')) icon = '🔑';
+        else if (line.includes('អរគុណ')) icon = '❤️';
+
+        slices.push({
+          text: line,
+          icon: icon,
+          color: isGreen ? '#0D753A' : '#F3AA1C',
+          textColor: isGreen ? '#FFFFFF' : '#1E293B'
+        });
+      });
+
+      switchTab('single');
+      renderPrizeList();
+    }
+
+    function resetToZealDefaults() {
+      slices = JSON.parse(JSON.stringify(ZEAL_DEFAULT_SLICES));
+      renderPrizeList();
+    }
+
+    function shuffleSlices() {
+      for (let i = slices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [slices[i], slices[j]] = [slices[j], slices[i]];
+      }
+      renderPrizeList();
+    }
+
+    function toggleAutoRemoveWinner(checked) {
+      autoRemoveWinner = checked;
+      localStorage.setItem('zeal_auto_remove_winner', JSON.stringify(checked));
+    }
+
+    function saveSlices() {
+      localStorage.setItem('zeal_wheel_slices_v2', JSON.stringify(slices));
+    }
+
+    /* ==========================================================================
+       8. INITIALIZATION ON PAGE LOAD
+       ========================================================================== */
+    window.addEventListener('load', () => {
+      renderCenterLogo();
+      renderPrizeList();
+      renderHistory();
+      updateSoundUI();
+      document.getElementById('removeWinnerCheckbox').checked = autoRemoveWinner;
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+    });
+  </script>
+</body>
+</html>
